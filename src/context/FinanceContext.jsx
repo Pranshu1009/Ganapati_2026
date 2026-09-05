@@ -61,12 +61,14 @@ export function FinanceProvider({ children }) {
   }
 
   function addExpense(form) {
+    const expenseDate = form.expenseDate || new Date().toISOString().slice(0, 10)
     const expense = {
       id: createId('exp'),
       title: form.title.trim(),
       category: form.category.trim(),
       amount: Number(form.amount),
       note: form.note?.trim() || '',
+      expenseDate,
       createdAt: new Date().toISOString(),
     }
     setExpenses((prev) => [expense, ...prev])

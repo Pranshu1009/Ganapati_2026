@@ -1,20 +1,45 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useFinance } from '../context/FinanceContext'
-import { formatDate, formatINR } from '../utils/receipt'
+import { formatDay, formatINR, todayInputValue } from '../utils/receipt'
 
-const empty = {
-  title: '',
-  category: 'Decoration',
-  amount: '',
-  note: '',
+function emptyForm() {
+  return {
+    title: '',
+    category: 'Decoration',
+    amount: '',
+    expenseDate: todayInputValue(),
+    note: '',
+  }
 }
 
 const categories = ['Decoration', 'Prasad', 'Lighting', 'Sound', 'Mandap', 'Misc']
 
 export default function Expenses() {
   const { expenses, addExpense, deleteExpense, totals } = useFinance()
-  const [form, setForm] = useState(empty)
+  const [form, setForm] = useState(emptyForm)
   const [error, setError] = useState('')
+  const [query, setQuery] = useState('')
+
+  const sortedExpenses = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    const list = q
+      ? expenses.filter(
+          (e) =>
+            e.title.toLowerCase().includes(q) ||
+            e.category.toLowerCase().includes(q) ||
+            (e.note || '').toLowerCase().includes(q) ||
+            (e.expenseDate || '').includes(q) ||
+            formatDay(e.expenseDate || e.createdAt).toLowerCase().includes(q),
+        )
+      : expenses
+
+    return [...list].sort((a, b) => {
+      const da = a.expenseDate || a.createdAt.slice(0, 10)
+      const db = b.expenseDate || b.createdAt.slice(0, 10)
+      if (da === db) return new Date(b.createdAt) - new Date(a.createdAt)
+      return db.localeCompare(da)
+    })
+  }, [expenses, query])
 
   function update(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -27,12 +52,16 @@ export default function Expenses() {
       setError('Enter expense title.')
       return
     }
+    if (!form.expenseDate) {
+      setError('Select the expense date.')
+      return
+    }
     if (!form.amount || Number(form.amount) <= 0) {
       setError('Enter a valid amount.')
       return
     }
     addExpense(form)
-    setForm(empty)
+    setForm(emptyForm())
   }
 
   return (
@@ -57,14 +86,13 @@ export default function Expenses() {
             />
           </label>
           <label>
-            Category
-            <select value={form.category} onChange={(e) => update('category', e.target.value)}>
-              {categories.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
+            Expense date
+            <input
+              type="date"
+              value={form.expenseDate}
+              onChange={(e) => update('expenseDate', e.target.value)}
+              required
+            />
           </label>
           <label>
             Amount (₹)
@@ -77,6 +105,16 @@ export default function Expenses() {
               placeholder="1000"
               required
             />
+          </label>
+          <label>
+            Category
+            <select value={form.category} onChange={(e) => update('category', e.target.value)}>
+              {categories.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="full">
             Note (optional)
@@ -94,11 +132,25 @@ export default function Expenses() {
       </form>
 
       <section className="panel reveal delay-2">
-        {expenses.length === 0 ? (
-          <p className="empty">No expenses yet.</p>
+        <div className="panel-head">
+          <h2>All expenses</h2>
+          <span className="muted-count">{sortedExpenses.length} shown</span>
+        </div>
+
+        <div className="toolbar">
+          <input
+            className="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by title, category, date…"
+          />
+        </div>
+
+        {sortedExpenses.length === 0 ? (
+          <p className="empty">No expenses to show.</p>
         ) : (
           <ul className="list dense">
-            {expenses.map((e) => (
+            {sortedExpenses.map((e) => (
               <li key={e.id}>
                 <div>
                   <strong>{e.title}</strong>
@@ -106,7 +158,7 @@ export default function Expenses() {
                     {e.category}
                     {e.note ? ` · ${e.note}` : ''}
                   </span>
-                  <span className="muted">{formatDate(e.createdAt)}</span>
+                  <span className="muted">Date: {formatDay(e.expenseDate || e.createdAt)}</span>
                 </div>
                 <div className="list-right actions">
                   <strong>{formatINR(e.amount)}</strong>

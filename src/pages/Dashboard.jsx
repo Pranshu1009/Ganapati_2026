@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useFinance } from '../context/FinanceContext'
-import { formatDate, formatINR } from '../utils/receipt'
+import { formatDate, formatDay, formatINR } from '../utils/receipt'
 
 export default function Dashboard() {
   const { totals, donations, expenses } = useFinance()
@@ -86,7 +86,7 @@ export default function Dashboard() {
                   </div>
                   <div className="list-right">
                     <strong>{formatINR(e.amount)}</strong>
-                    <span>{formatDate(e.createdAt)}</span>
+                    <span>{formatDay(e.expenseDate || e.createdAt)}</span>
                   </div>
                 </li>
               ))}

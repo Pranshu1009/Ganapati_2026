@@ -384,6 +384,16 @@ select {
   white-space: nowrap;
 }
 
+.muted-count {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.panel .toolbar {
+  margin-bottom: 0.75rem;
+}
+
 .list {
   list-style: none;
   margin: 0;
