@@ -1,4 +1,4 @@
-import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
@@ -13,7 +13,7 @@ export default function App() {
   return (
     <AuthProvider>
       <FinanceProvider>
-        <HashRouter>
+        <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route
@@ -30,7 +30,7 @@ export default function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>
-        </HashRouter>
+        </BrowserRouter>
       </FinanceProvider>
     </AuthProvider>
   )

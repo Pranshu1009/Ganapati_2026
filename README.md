@@ -24,9 +24,7 @@ Open the URL Vite prints (usually `http://localhost:5173`).
 
 ## Live site
 
-After GitHub Pages is enabled (Settings → Pages → Source: **GitHub Actions**):
-
-**https://pranshu1009.github.io/Ganapati_2026/**
+Hosted on Vercel (or local `npm run dev`).
 
 ## Shared login (everyone uses the same)
 
