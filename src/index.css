@@ -232,6 +232,7 @@ select {
   font-size: 0.78rem !important;
   font-weight: 700;
   width: fit-content;
+  max-width: 100%;
 }
 
 .sync-pill.ok {
