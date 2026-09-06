@@ -4,11 +4,12 @@ React app to manage pandal money flow for **Gokul Dhara Society**.
 
 ## Features
 
-- **Login** — only authorized committee members can open the app
-- **Collect Chanda** — donor name, mobile, wing, room, amount; saves the record and opens WhatsApp with a digital receipt ready to send
-- **Dashboard** — total donations, total expenses, remaining balance
-- **Donations** — search, resend receipt, delete
-- **Expenses** — record festival spending by category
+- **Login** — shared committee login
+- **Collect Chanda** — wing, room number, and amount
+- **Dashboard** — total donations, expenses, remaining balance
+- **Chanda Records** — search and manage all chanda entries
+- **Expenses** — record festival spending with date
+- **Download Excel** — export summary, chanda, and expenses to `.xlsx`
 - Mobile-friendly layout with bottom navigation on phones
 
 Data is stored in the browser (`localStorage`) on this device.
@@ -30,7 +31,3 @@ Hosted on Vercel (or local `npm run dev`).
 
 - **Username:** `gokuldhara`
 - **Password:** `ganapati2026`
-
-## Receipts
-
-After saving a donation, WhatsApp Web/App opens with a pre-filled receipt for the donor’s number. Tap **Send** to deliver it. Resend anytime from the Donations page.

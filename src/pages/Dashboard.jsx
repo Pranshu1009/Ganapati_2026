@@ -1,11 +1,16 @@
 import { Link } from 'react-router-dom'
 import { useFinance } from '../context/FinanceContext'
+import { exportAllDataToExcel } from '../utils/exportExcel'
 import { formatDate, formatDay, formatINR } from '../utils/receipt'
 
 export default function Dashboard() {
   const { totals, donations, expenses } = useFinance()
   const recentDonations = donations.slice(0, 5)
   const recentExpenses = expenses.slice(0, 5)
+
+  function handleExport() {
+    exportAllDataToExcel({ donations, expenses, totals })
+  }
 
   return (
     <section className="stack">
@@ -18,7 +23,7 @@ export default function Dashboard() {
         <article className="stat-block donation">
           <p className="stat-label">Total Donation</p>
           <p className="stat-value">{formatINR(totals.totalDonation)}</p>
-          <p className="stat-meta">{totals.donorCount} donors</p>
+          <p className="stat-meta">{totals.donorCount} entries</p>
         </article>
         <article className="stat-block expense">
           <p className="stat-label">Total Expense</p>
@@ -39,12 +44,15 @@ export default function Dashboard() {
         <Link className="btn ghost" to="/expenses">
           Add Expense
         </Link>
+        <button type="button" className="btn ghost" onClick={handleExport}>
+          Download Excel
+        </button>
       </div>
 
       <div className="split-panels reveal delay-3">
         <section className="panel">
           <div className="panel-head">
-            <h2>Recent donations</h2>
+            <h2>Recent chanda</h2>
             <Link to="/donations">View all</Link>
           </div>
           {recentDonations.length === 0 ? (
@@ -54,10 +62,10 @@ export default function Dashboard() {
               {recentDonations.map((d) => (
                 <li key={d.id}>
                   <div>
-                    <strong>{d.name}</strong>
-                    <span>
+                    <strong>
                       Wing {d.wing} · Room {d.roomNo}
-                    </span>
+                    </strong>
+                    <span>{d.receiptNo}</span>
                   </div>
                   <div className="list-right">
                     <strong>{formatINR(d.amount)}</strong>

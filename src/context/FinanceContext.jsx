@@ -7,7 +7,6 @@ import {
   saveDonations,
   saveExpenses,
 } from '../utils/storage'
-import { openWhatsAppReceipt } from '../utils/receipt'
 
 const FinanceContext = createContext(null)
 
@@ -35,12 +34,10 @@ export function FinanceProvider({ children }) {
     }
   }, [donations, expenses])
 
-  function addDonation(form, { sendReceipt = true } = {}) {
+  function addDonation(form) {
     const donation = {
       id: createId('don'),
       receiptNo: createReceiptNo(),
-      name: form.name.trim(),
-      phone: form.phone.trim(),
       wing: form.wing.trim().toUpperCase(),
       roomNo: form.roomNo.trim(),
       amount: Number(form.amount),
@@ -48,11 +45,6 @@ export function FinanceProvider({ children }) {
     }
 
     setDonations((prev) => [donation, ...prev])
-
-    if (sendReceipt) {
-      openWhatsAppReceipt(donation)
-    }
-
     return donation
   }
 
@@ -79,10 +71,6 @@ export function FinanceProvider({ children }) {
     setExpenses((prev) => prev.filter((e) => e.id !== id))
   }
 
-  function resendReceipt(donation) {
-    openWhatsAppReceipt(donation)
-  }
-
   const value = {
     donations,
     expenses,
@@ -91,7 +79,6 @@ export function FinanceProvider({ children }) {
     deleteDonation,
     addExpense,
     deleteExpense,
-    resendReceipt,
   }
 
   return <FinanceContext.Provider value={value}>{children}</FinanceContext.Provider>

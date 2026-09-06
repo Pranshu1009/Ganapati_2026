@@ -3,8 +3,6 @@ import { useFinance } from '../context/FinanceContext'
 import { formatINR } from '../utils/receipt'
 
 const empty = {
-  name: '',
-  phone: '',
   wing: '',
   roomNo: '',
   amount: '',
@@ -22,9 +20,6 @@ export default function CollectChanda() {
   }
 
   function validate() {
-    if (!form.name.trim()) return 'Enter donor name.'
-    const phone = form.phone.replace(/\D/g, '')
-    if (phone.length < 10) return 'Enter a valid 10-digit mobile number.'
     if (!form.wing.trim()) return 'Enter wing.'
     if (!form.roomNo.trim()) return 'Enter room number.'
     if (!form.amount || Number(form.amount) <= 0) return 'Enter a valid amount.'
@@ -39,7 +34,7 @@ export default function CollectChanda() {
       return
     }
 
-    const donation = addDonation(form, { sendReceipt: true })
+    const donation = addDonation(form)
     setSuccess(donation)
     setForm(empty)
   }
@@ -48,32 +43,11 @@ export default function CollectChanda() {
     <section className="stack narrow">
       <header className="page-head reveal">
         <h1>Collect Chanda</h1>
-        <p>Save donor details and send a WhatsApp digital receipt instantly.</p>
+        <p>Save wing, room number, and amount for each contribution.</p>
       </header>
 
       <form className="form-panel reveal delay-1" onSubmit={handleSubmit}>
         <div className="field-grid">
-          <label>
-            Donor name
-            <input
-              value={form.name}
-              onChange={(e) => update('name', e.target.value)}
-              placeholder="e.g. Priya Sharma"
-              autoComplete="name"
-              required
-            />
-          </label>
-          <label>
-            Mobile number
-            <input
-              value={form.phone}
-              onChange={(e) => update('phone', e.target.value)}
-              placeholder="10-digit WhatsApp number"
-              inputMode="tel"
-              autoComplete="tel"
-              required
-            />
-          </label>
           <label>
             Wing
             <input
@@ -109,11 +83,8 @@ export default function CollectChanda() {
         {error ? <p className="form-error">{error}</p> : null}
 
         <button type="submit" className="btn primary wide">
-          Save &amp; Send Receipt
+          Save Chanda
         </button>
-        <p className="hint">
-          WhatsApp opens with a ready receipt for the donor. Tap send to deliver it.
-        </p>
       </form>
 
       {success ? (
@@ -121,7 +92,8 @@ export default function CollectChanda() {
           <div>
             <p className="success-title">Chanda recorded</p>
             <p>
-              {success.name} · {formatINR(success.amount)} · Receipt {success.receiptNo}
+              Wing {success.wing} · Room {success.roomNo} · {formatINR(success.amount)} ·{' '}
+              {success.receiptNo}
             </p>
           </div>
           <button type="button" className="btn ghost" onClick={() => setSuccess(null)}>
