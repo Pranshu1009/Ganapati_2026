@@ -224,6 +224,26 @@ select {
   font-size: clamp(0.9rem, 2.8vw, 1rem);
 }
 
+.sync-pill {
+  display: inline-flex;
+  margin-top: 0.65rem !important;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem !important;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.sync-pill.ok {
+  background: rgba(46, 125, 50, 0.12);
+  color: #1b5e20;
+}
+
+.sync-pill.warn {
+  background: rgba(198, 120, 20, 0.14);
+  color: #8a4b00;
+}
+
 .stack {
   display: flex;
   flex-direction: column;

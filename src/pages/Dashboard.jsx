@@ -1,22 +1,59 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
 import { useFinance } from '../context/FinanceContext'
 import { exportAllDataToExcel } from '../utils/exportExcel'
 import { formatDate, formatDay, formatINR } from '../utils/receipt'
+import { Link } from 'react-router-dom'
 
 export default function Dashboard() {
-  const { totals, donations, expenses } = useFinance()
+  const {
+    totals,
+    donations,
+    expenses,
+    syncMode,
+    syncError,
+    cloudEnabled,
+    uploadLocalDataToCloud,
+  } = useFinance()
   const recentDonations = donations.slice(0, 5)
   const recentExpenses = expenses.slice(0, 5)
+  const [uploadMsg, setUploadMsg] = useState('')
+  const [uploading, setUploading] = useState(false)
 
   function handleExport() {
     exportAllDataToExcel({ donations, expenses, totals })
   }
+
+  async function handleUploadLocal() {
+    setUploading(true)
+    setUploadMsg('')
+    try {
+      const result = await uploadLocalDataToCloud()
+      setUploadMsg(
+        `Uploaded ${result.donations} chanda + ${result.expenses} expenses from this device to shared cloud.`,
+      )
+    } catch (err) {
+      setUploadMsg(err.message || 'Upload failed')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const syncLabel =
+    syncMode === 'cloud'
+      ? 'Synced across all devices'
+      : syncMode === 'connecting'
+        ? 'Connecting to cloud…'
+        : cloudEnabled
+          ? 'Offline — local only'
+          : 'Cloud not configured'
 
   return (
     <section className="stack">
       <header className="page-head reveal">
         <h1>Dashboard</h1>
         <p>Track chanda, expenses, and balance for the Ganapati celebration.</p>
+        <p className={`sync-pill ${syncMode === 'cloud' ? 'ok' : 'warn'}`}>{syncLabel}</p>
+        {syncError ? <p className="form-error">{syncError}</p> : null}
       </header>
 
       <div className="stat-grid reveal delay-1">
@@ -47,7 +84,18 @@ export default function Dashboard() {
         <button type="button" className="btn ghost" onClick={handleExport}>
           Download Excel
         </button>
+        {cloudEnabled ? (
+          <button
+            type="button"
+            className="btn ghost"
+            onClick={handleUploadLocal}
+            disabled={uploading}
+          >
+            {uploading ? 'Uploading…' : 'Upload this phone’s data'}
+          </button>
+        ) : null}
       </div>
+      {uploadMsg ? <p className="hint">{uploadMsg}</p> : null}
 
       <div className="split-panels reveal delay-3">
         <section className="panel">
